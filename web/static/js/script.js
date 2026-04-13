@@ -1,6 +1,5 @@
 const API_BASE = "http://localhost:3000/api";
 
-
 // ==================== FETCH ====================
 async function fetchData(endpoint) {
   try {
@@ -12,7 +11,6 @@ async function fetchData(endpoint) {
     return null;
   }
 }
-
 
 // ==================== AFFICHAGE FILMS ====================
 function displayMovies(movies, containerId) {
@@ -27,15 +25,51 @@ function displayMovies(movies, containerId) {
     const card = document.createElement("div");
     card.classList.add("card");
 
+    let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
+    const isFav = favoris.find(f => f.id === movie.id);
+
     card.innerHTML = `
       <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" />
+
       <div class="info">
         <h4>${movie.title || movie.name}</h4>
         <p>⭐ ${movie.vote_average}</p>
         <p>${movie.release_date?.split("-")[0] || ""}</p>
+
+        <div class="card-buttons">
+          <button class="btn-detail">Détails</button>
+          <button class="btn-fav">${isFav ? "Retirer" : "Favoris"}</button>
+        </div>
       </div>
     `;
 
+    // bouton détails
+    card.querySelector(".btn-detail").addEventListener("click", (e) => {
+      e.stopPropagation();
+      window.location.href = `film.html?id=${movie.id}`;
+    });
+
+    // bouton favoris
+    const favBtn = card.querySelector(".btn-fav");
+
+    favBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
+      const index = favoris.findIndex(f => f.id === movie.id);
+
+      if (index !== -1) {
+        favoris.splice(index, 1);
+        favBtn.textContent = "Favoris";
+      } else {
+        favoris.push(movie);
+        favBtn.textContent = "Retirer";
+      }
+
+      localStorage.setItem("favoris", JSON.stringify(favoris));
+    });
+
+    // clic carte
     card.addEventListener("click", () => {
       window.location.href = `film.html?id=${movie.id}`;
     });
@@ -44,8 +78,7 @@ function displayMovies(movies, containerId) {
   });
 }
 
-
-// ==================== HERO SLIDER ====================
+// ==================== HERO ====================
 let heroMovies = [];
 let currentIndex = 0;
 let interval;
@@ -64,6 +97,37 @@ function showHero(index) {
 
   document.getElementById("heroInfo").textContent =
     movie.overview || "Pas de description";
+
+  const detailBtn = document.getElementById("heroDetail");
+  const favBtn = document.getElementById("heroFav");
+
+  if (detailBtn) {
+    detailBtn.onclick = () => {
+      window.location.href = `film.html?id=${movie.id}`;
+    };
+  }
+
+  if (favBtn) {
+    let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
+    const isFav = favoris.find(f => f.id === movie.id);
+
+    favBtn.textContent = isFav ? "Retirer" : "Favoris";
+
+    favBtn.onclick = () => {
+      let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
+      const index = favoris.findIndex(f => f.id === movie.id);
+
+      if (index !== -1) {
+        favoris.splice(index, 1);
+        favBtn.textContent = "Favoris";
+      } else {
+        favoris.push(movie);
+        favBtn.textContent = "Retirer";
+      }
+
+      localStorage.setItem("favoris", JSON.stringify(favoris));
+    };
+  }
 }
 
 function nextSlide() {
@@ -72,56 +136,31 @@ function nextSlide() {
   showHero(currentIndex);
 }
 
-function prevSlide() {
-  if (heroMovies.length === 0) return;
-  currentIndex = (currentIndex - 1 + heroMovies.length) % heroMovies.length;
-  showHero(currentIndex);
-}
-
 function startAutoSlide() {
   clearInterval(interval);
   interval = setInterval(nextSlide, 5000);
 }
 
-
 // ==================== PAGE ACCUEIL ====================
 async function loadHome() {
   const trending = await fetchData("/movies/trending");
+  if (!trending) return;
 
-  if (!trending || trending.length === 0) return;
-
-  // 🎬 HERO
   heroMovies = trending.slice(0, 5);
-  showHero(0);
+  currentIndex = 0;
+  showHero(currentIndex);
   startAutoSlide();
 
-  // 🔥 TENDANCES
   displayMovies(trending.slice(0, 15), "trending");
+  displayMovies(trending.slice(0, 15), "movies");
+  displayMovies(trending.slice(5, 20), "series");
 
-  // 🎥 FILMS (ceux avec title)
-  const moviesOnly = trending.filter(m => m.title);
-  displayMovies(moviesOnly.slice(0, 15), "movies");
-
-  // 📺 SERIES (ceux avec name)
-  const seriesOnly = trending.filter(m => m.name);
-  displayMovies(seriesOnly.slice(0, 15), "series");
-
-  // ⭐ TOP RATED
-  const topRated = [...trending]
-    .filter(m => m.vote_average)
-    .sort((a, b) => b.vote_average - a.vote_average);
-
+  const topRated = [...trending].sort((a, b) => b.vote_average - a.vote_average);
   displayMovies(topRated.slice(0, 15), "top");
 
-  // 🎬 ACTION
-  const action = trending.filter(m => m.genre_ids?.includes(28));
-  displayMovies(action.slice(0, 15), "action");
-
-  // 😂 COMEDIE
-  const comedy = trending.filter(m => m.genre_ids?.includes(35));
-  displayMovies(comedy.slice(0, 15), "comedy");
+  displayMovies(trending.slice(0, 10), "action");
+  displayMovies(trending.slice(10, 20), "comedy");
 }
-
 
 // ==================== PAGE DETAIL ====================
 async function loadFilmDetail() {
@@ -133,88 +172,46 @@ async function loadFilmDetail() {
   const movie = await fetchData(`/movies/${id}`);
   if (!movie) return;
 
-  // 🎬 HERO
   const hero = document.getElementById("filmHero");
 
-  if (hero) {
+  if (hero && movie.backdrop_path) {
     hero.style.backgroundImage =
       `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
-
-    document.getElementById("filmTitle").textContent =
-      movie.title || movie.name;
-
-    document.getElementById("filmOverview").textContent =
-      movie.overview || "Pas de description";
-
-    document.getElementById("filmInfo").textContent =
-      `⭐ ${movie.vote_average} | ${movie.release_date}`;
   }
 
-  // ❤️ FAVORIS
+  document.getElementById("filmTitle").textContent =
+    movie.title || movie.name;
+
+  document.getElementById("filmOverview").textContent =
+    movie.overview || "Pas de description";
+
+  let info = `⭐ ${movie.vote_average}`;
+
+  if (movie.release_date) info += ` | ${movie.release_date}`;
+  if (movie.runtime) info += ` | ${movie.runtime} min`;
+
+  if (movie.genres) {
+    const genres = movie.genres.map(g => g.name).join(", ");
+    info += ` | ${genres}`;
+  }
+
+  document.getElementById("filmInfo").textContent = info;
+
   setupFavoriteButton(movie);
-
-  // 🎭 CAST
-  loadCast(id);
-
-  // 🎬 SIMILAIRES
-  loadSimilar(id);
 }
 
-
-// ==================== CAST ====================
-async function loadCast(id) {
-  const data = await fetchData(`/movies/${id}/credits`);
-  if (!data || !data.cast) return;
-
-  const container = document.getElementById("cast");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  data.cast.slice(0, 10).forEach(actor => {
-    if (!actor.profile_path) return;
-
-    const div = document.createElement("div");
-    div.classList.add("card");
-
-    div.innerHTML = `
-      <img src="https://image.tmdb.org/t/p/w200${actor.profile_path}" />
-      <div class="info">
-        <h4>${actor.name}</h4>
-        <p>${actor.character}</p>
-      </div>
-    `;
-
-    container.appendChild(div);
-  });
-}
-
-
-// ==================== SIMILAIRES ====================
-async function loadSimilar(id) {
-  const data = await fetchData(`/movies/${id}/similar`);
-  if (!data) return;
-
-  displayMovies(data, "similar");
-}
-
-
-// ==================== FAVORIS ====================
+// ==================== FAVORIS DETAIL ====================
 function setupFavoriteButton(movie) {
   const btn = document.getElementById("favBtn");
   if (!btn) return;
 
   let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
-
   const isFav = favoris.find(f => f.id === movie.id);
 
-  if (isFav) {
-    btn.textContent = "Retirer des favoris";
-  }
+  if (isFav) btn.textContent = "Retirer des favoris";
 
   btn.addEventListener("click", () => {
     let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
-
     const index = favoris.findIndex(f => f.id === movie.id);
 
     if (index !== -1) {
@@ -229,40 +226,7 @@ function setupFavoriteButton(movie) {
   });
 }
 
-
-// ==================== LOGIN ====================
-function setupLogin() {
-  const form = document.getElementById("loginForm");
-  if (!form) return;
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    const res = await fetch(`${API_BASE}/users/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      alert("Connexion réussie !");
-      localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = "index.html";
-    } else {
-      alert("Erreur de connexion");
-    }
-  });
-}
-
-
-// ==================== FAVORIS PAGE ====================
+// ==================== PAGE FAVORIS ====================
 function loadFavoris() {
   const container = document.getElementById("favorisList");
   if (!container) return;
@@ -274,34 +238,12 @@ function loadFavoris() {
     return;
   }
 
-  container.innerHTML = "";
-
-  favoris.forEach(movie => {
-    const div = document.createElement("div");
-    div.classList.add("card");
-
-    div.innerHTML = `
-      <img src="https://image.tmdb.org/t/p/w200${movie.poster_path}" />
-      <p>${movie.title}</p>
-    `;
-
-    container.appendChild(div);
-  });
+  displayMovies(favoris, "favorisList");
 }
 
-
-// ==================== INIT GLOBAL ====================
+// ==================== INIT ====================
 document.addEventListener("DOMContentLoaded", () => {
   loadHome();
   loadFilmDetail();
-  setupLogin();
   loadFavoris();
-
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-
-  if (prevBtn && nextBtn) {
-    prevBtn.addEventListener("click", prevSlide);
-    nextBtn.addEventListener("click", nextSlide);
-  }
 });

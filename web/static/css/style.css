@@ -4,6 +4,7 @@ font-family:Arial;
 background:#141414;
 color:white;
 }
+
 header{
 display:flex;
 justify-content:space-between;
@@ -11,14 +12,17 @@ align-items:center;
 padding:20px;
 background:black;
 }
+
 header h1{
 color:#e50914;
 }
+
 nav a{
 color:white;
 margin-left:20px;
 text-decoration:none;
 }
+
 .hero{
 height:450px;
 background-size:cover;
@@ -26,135 +30,157 @@ background-position:center;
 display:flex;
 align-items:flex-end;
 padding:40px;
+position: relative;
 }
+
 .hero-content{
 background:rgba(0,0,0,0.6);
 padding:20px;
 border-radius:8px;
 }
+
+.hero-buttons{
+margin-top:20px;
+display:flex;
+gap:10px;
+}
+
 section{
 padding:20px;
 }
+
 .carousel{
 display:flex;
 overflow-x:auto;
 gap:15px;
+scroll-behavior:smooth;
 }
+
+.carousel::-webkit-scrollbar{
+display:none;
+}
+
+/* CARDS */
 .card{
 position:relative;
 min-width:160px;
+overflow:hidden;
 cursor:pointer;
-transition:transform 0.3s;
 }
-.card:hover{
-transform:scale(1.1);
-}
+
 .card img{
 width:160px;
 border-radius:8px;
 }
+
+/* INFO TOUJOURS VISIBLE */
 .info{
 position:absolute;
 bottom:0;
-background:rgba(0,0,0,0.85);
 width:100%;
-padding:10px;
-opacity:0;
-transition:0.3s;
-font-size:14px;
-}
-.card:hover .info{
-opacity:1;
-}
-.carousel::-webkit-scrollbar{
-display:none;
-}
-.btn-films {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 12px 25px;
-    background-color: #e50914;
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    border-radius: 5px;
+padding:12px;
+background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4), transparent);
+font-size:13px;
+display:flex;
+flex-direction:column;
+justify-content:flex-end;
+height:100%;
 }
 
-.btn-films:hover {
-    background-color: #b20710;
+.info h4{
+margin:0 0 5px 0;
 }
+
+.info p{
+margin:2px 0;
+}
+
+/* BOUTONS */
+.card-buttons{
+display:flex;
+gap:8px;
+margin-top:8px;
+}
+
+.btn-detail{
+background:#e50914;
+color:white;
+border:none;
+padding:5px 10px;
+font-size:12px;
+border-radius:4px;
+cursor:pointer;
+}
+
+.btn-detail:hover{
+background:#b20710;
+}
+
+.btn-fav{
+background:transparent;
+color:white;
+border:1px solid white;
+padding:5px 10px;
+font-size:12px;
+border-radius:4px;
+cursor:pointer;
+}
+
+.btn-fav:hover{
+background:white;
+color:black;
+}
+
+/* CATALOGUE */
 .catalogue{
-    display: flex;
-    gap: 20px;
-    margin-top: 20px;
+display:flex;
+gap:20px;
+margin-top:20px;
 }
 
 .film-card{
-    width: 150px;
-    height: 200px;
-    background: #222;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 5px;
+width:150px;
+height:200px;
+background:#222;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:5px;
 }
-.card {
-  position: relative;
-  min-width: 160px;
-  cursor: pointer;
-  transition: transform 0.3s ease, z-index 0.3s;
-}
-
-.card:hover {
-  transform: scale(1.2);
-  z-index: 10;
-}
-.info {
-  position: absolute;
-  bottom: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-  width: 100%;
-  padding: 10px;
-  opacity: 0;
-  transition: 0.3s;
-}
-
-.card:hover .info {
-  opacity: 1;
-}
-.carousel {
-  display: flex;
-  overflow-x: auto;
+/* ===== PAGE FAVORIS EN GRILLE ===== */
+#favorisList {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
   gap: 15px;
-  scroll-behavior: smooth;
-}
-.hero {
-    position: relative; /* IMPORTANT pour les boutons */
 }
 
-/* BOUTONS SLIDER */
-.hero-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0,0,0,0.5);
-    border: none;
-    color: white;
-    font-size: 30px;
-    padding: 10px;
-    cursor: pointer;
-    z-index: 10;
+/* adapte les cartes dans la grille */
+#favorisList .card {
+  min-width: unset;
+  width: 100%;
 }
 
-.hero-btn.left {
-    left: 10px;
+/* images prennent toute la largeur */
+#favorisList .card img {
+  width: 100%;
 }
 
-.hero-btn.right {
-    right: 10px;
+/* responsive (important sinon ça casse sur petits écrans) */
+@media (max-width: 1400px) {
+  #favorisList {
+    grid-template-columns: repeat(6, 1fr);
+  }
 }
 
-.hero-btn:hover {
-    background: rgba(0,0,0,0.8);
+@media (max-width: 1000px) {
+  #favorisList {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  #favorisList {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
