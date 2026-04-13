@@ -148,39 +148,34 @@ align-items:center;
 justify-content:center;
 border-radius:5px;
 }
-/* ===== PAGE FAVORIS EN GRILLE ===== */
-#favorisList {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 15px;
+header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  background: black;
 }
 
-/* adapte les cartes dans la grille */
-#favorisList .card {
-  min-width: unset;
-  width: 100%;
+/* LOGO */
+header h1 {
+  color: #e50914;
 }
 
-/* images prennent toute la largeur */
-#favorisList .card img {
-  width: 100%;
+/* NAV reste à droite */
+nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-left: auto;
 }
 
-/* responsive (important sinon ça casse sur petits écrans) */
-@media (max-width: 1400px) {
-  #favorisList {
-    grid-template-columns: repeat(6, 1fr);
-  }
-}
-
-@media (max-width: 1000px) {
-  #favorisList {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
-  #favorisList {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* 👉 BARRE DE RECHERCHE AU MILIEU */
+#searchInput {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  width: 200px;
 }

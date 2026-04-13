@@ -60,7 +60,14 @@ function displayMovies(movies, containerId) {
 
       if (index !== -1) {
         favoris.splice(index, 1);
-        favBtn.textContent = "Favoris";
+
+        // 🔥 SUPPRESSION DIRECTE VISUELLE SI PAGE FAVORIS
+        if (containerId === "favorisList") {
+          card.remove();
+        } else {
+          favBtn.textContent = "Favoris";
+        }
+
       } else {
         favoris.push(movie);
         favBtn.textContent = "Retirer";

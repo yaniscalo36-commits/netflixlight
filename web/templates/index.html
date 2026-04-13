@@ -15,6 +15,7 @@
         <a href="index.html">Accueil</a>
         <a href="favoris.html">Favoris</a>
         <a href="authentication.html">Connexion</a>
+         <input type="text" id="searchInput" placeholder="Rechercher..." />
     </nav>
 </header>
 
@@ -31,6 +32,11 @@
         </div>
     </div>
 
+</section>
+
+<section id="searchSection" style="display:none;">
+    <h2>Résultats</h2>
+    <div class="carousel" id="searchResults"></div>
 </section>
 
 <!-- TENDANCES -->
@@ -70,6 +76,7 @@
 </section>
 
 <script src="/js/script.js"></script>
+<script src="/js/search.js"></script>
 
 </body>
 </html>
