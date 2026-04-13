@@ -179,3 +179,34 @@ nav {
   outline: none;
   width: 200px;
 }
+/* FAVORIS EN GRILLE */
+#favorisList {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 20px;
+  padding: 20px;
+}
+
+/* adapte la taille des cartes */
+#favorisList .card {
+  min-width: 100%;
+}
+
+/* responsive (important) */
+@media (max-width: 1400px) {
+  #favorisList {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 1000px) {
+  #favorisList {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  #favorisList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
