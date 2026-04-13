@@ -99,3 +99,62 @@ display:none;
     justify-content: center;
     border-radius: 5px;
 }
+.card {
+  position: relative;
+  min-width: 160px;
+  cursor: pointer;
+  transition: transform 0.3s ease, z-index 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.2);
+  z-index: 10;
+}
+.info {
+  position: absolute;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  width: 100%;
+  padding: 10px;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.card:hover .info {
+  opacity: 1;
+}
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
+  scroll-behavior: smooth;
+}
+.hero {
+    position: relative; /* IMPORTANT pour les boutons */
+}
+
+/* BOUTONS SLIDER */
+.hero-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.5);
+    border: none;
+    color: white;
+    font-size: 30px;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.hero-btn.left {
+    left: 10px;
+}
+
+.hero-btn.right {
+    right: 10px;
+}
+
+.hero-btn:hover {
+    background: rgba(0,0,0,0.8);
+}

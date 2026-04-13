@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Films et Séries - NetflixLight</title>
-    <link rel="stylesheet" href="../static/css/style.css">
+    <title>Détail - NetflixLight</title>
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
@@ -18,30 +18,31 @@
     </nav>
 </header>
 
-<section>
-    <h2>Films et Séries</h2>
-    <p>Bienvenue sur la page des films et séries.</p>
+<!-- HERO DETAIL -->
+<section class="hero" id="filmHero">
+    <div class="hero-content">
+        <h2 id="filmTitle"></h2>
+        <p id="filmOverview"></p>
 
-    <div class="catalogue">
+        <p id="filmInfo"></p>
 
-        <div class="film-card">
-            <p>Film 1</p>
-        </div>
-
-        <div class="film-card">
-            <p>Film 2</p>
-        </div>
-
-        <div class="film-card">
-            <p>Série 1</p>
-        </div>
-
+        <button id="favBtn" class="btn-films">Ajouter aux favoris</button>
     </div>
-
 </section>
 
-<script src="../static/js/script.js"></script>
+<!-- CAST -->
+<section>
+    <h2>Acteurs</h2>
+    <div class="carousel" id="cast"></div>
+</section>
+
+<!-- SIMILAIRES -->
+<section>
+    <h2>Films similaires</h2>
+    <div class="carousel" id="similar"></div>
+</section>
+
+<script src="/js/script.js"></script>
 
 </body>
-
 </html>
