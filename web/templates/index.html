@@ -11,15 +11,18 @@
 
 <header>
     <h1>NETFLIXLIGHT</h1>
+    <!-- NAVIGATION -->
     <nav>
         <a href="index.html">Accueil</a>
         <a href="favoris.html">Favoris</a>
         <a href="authentication.html">Connexion</a>
-         <input type="text" id="searchInput" placeholder="Rechercher..." />
-    </nav>
-</header>
 
-<!-- HERO -->
+    </nav>
+
+    <!-- BARRE DE RECHERCHE (centrée via CSS) -->
+    <input type="text" id="searchInput" placeholder="Rechercher..." />
+</header>
+<!-- ================= HERO ================= -->
 <section class="hero" id="hero">
 
     <div class="hero-content">
@@ -34,11 +37,13 @@
 
 </section>
 
-<section id="searchSection" style="display:none;">
+
+<!-- ================= RECHERCHE ================= -->
+<section id="searchSection">
     <h2>Résultats</h2>
     <div class="carousel" id="searchResults"></div>
 </section>
-
+<!-- ================= CONTENU ================= -->
 <!-- TENDANCES -->
 <section>
     <h2>Tendances du moment</h2>
@@ -74,7 +79,7 @@
     <h2>Comédie</h2>
     <div class="carousel" id="comedy"></div>
 </section>
-
+<!-- ================= SCRIPTS ================= -->
 <script src="/js/script.js"></script>
 <script src="/js/search.js"></script>
 

@@ -4,7 +4,7 @@ const API_BASE = "http://localhost:3000/api";
 async function fetchData(endpoint) {
   try {
     const res = await fetch(`${API_BASE}${endpoint}`);
-    if (!res.ok) throw new Error("Erreur API");
+    if (!res.ok) throw new Error();
     return await res.json();
   } catch (err) {
     console.error("Erreur API :", err);
@@ -25,8 +25,8 @@ function displayMovies(movies, containerId) {
     const card = document.createElement("div");
     card.classList.add("card");
 
-    let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
-    const isFav = favoris.find(f => f.id === movie.id);
+    const favoris = JSON.parse(localStorage.getItem("favoris")) || [];
+    const isFav = favoris.some(f => f.id === movie.id);
 
     card.innerHTML = `
       <img src="https://image.tmdb.org/t/p/w300${movie.poster_path}" />
@@ -44,15 +44,15 @@ function displayMovies(movies, containerId) {
     `;
 
     // bouton détails
-    card.querySelector(".btn-detail").addEventListener("click", (e) => {
+    card.querySelector(".btn-detail").onclick = (e) => {
       e.stopPropagation();
       window.location.href = `film.html?id=${movie.id}`;
-    });
+    };
 
     // bouton favoris
     const favBtn = card.querySelector(".btn-fav");
 
-    favBtn.addEventListener("click", (e) => {
+    favBtn.onclick = (e) => {
       e.stopPropagation();
 
       let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
@@ -61,7 +61,7 @@ function displayMovies(movies, containerId) {
       if (index !== -1) {
         favoris.splice(index, 1);
 
-        // 🔥 SUPPRESSION DIRECTE VISUELLE SI PAGE FAVORIS
+
         if (containerId === "favorisList") {
           card.remove();
         } else {
@@ -74,12 +74,12 @@ function displayMovies(movies, containerId) {
       }
 
       localStorage.setItem("favoris", JSON.stringify(favoris));
-    });
+    };
 
     // clic carte
-    card.addEventListener("click", () => {
+    card.onclick = () => {
       window.location.href = `film.html?id=${movie.id}`;
-    });
+    };
 
     container.appendChild(card);
   });
@@ -99,11 +99,8 @@ function showHero(index) {
   hero.style.backgroundImage =
     `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
 
-  document.getElementById("heroTitle").textContent =
-    movie.title || movie.name;
-
-  document.getElementById("heroInfo").textContent =
-    movie.overview || "Pas de description";
+  document.getElementById("heroTitle").textContent = movie.title || movie.name;
+  document.getElementById("heroInfo").textContent = movie.overview || "Pas de description";
 
   const detailBtn = document.getElementById("heroDetail");
   const favBtn = document.getElementById("heroFav");
@@ -116,7 +113,7 @@ function showHero(index) {
 
   if (favBtn) {
     let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
-    const isFav = favoris.find(f => f.id === movie.id);
+    const isFav = favoris.some(f => f.id === movie.id);
 
     favBtn.textContent = isFav ? "Retirer" : "Favoris";
 
@@ -138,7 +135,7 @@ function showHero(index) {
 }
 
 function nextSlide() {
-  if (heroMovies.length === 0) return;
+
   currentIndex = (currentIndex + 1) % heroMovies.length;
   showHero(currentIndex);
 }
@@ -171,9 +168,7 @@ async function loadHome() {
 
 // ==================== PAGE DETAIL ====================
 async function loadFilmDetail() {
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
-
+  const id = new URLSearchParams(window.location.search).get("id");
   if (!id) return;
 
   const movie = await fetchData(`/movies/${id}`);
@@ -186,21 +181,14 @@ async function loadFilmDetail() {
       `url(https://image.tmdb.org/t/p/original${movie.backdrop_path})`;
   }
 
-  document.getElementById("filmTitle").textContent =
-    movie.title || movie.name;
-
-  document.getElementById("filmOverview").textContent =
-    movie.overview || "Pas de description";
+  document.getElementById("filmTitle").textContent = movie.title || movie.name;
+  document.getElementById("filmOverview").textContent = movie.overview || "Pas de description";
 
   let info = `⭐ ${movie.vote_average}`;
 
   if (movie.release_date) info += ` | ${movie.release_date}`;
   if (movie.runtime) info += ` | ${movie.runtime} min`;
-
-  if (movie.genres) {
-    const genres = movie.genres.map(g => g.name).join(", ");
-    info += ` | ${genres}`;
-  }
+  if (movie.genres) info += ` | ${movie.genres.map(g => g.name).join(", ")}`;
 
   document.getElementById("filmInfo").textContent = info;
 
@@ -213,11 +201,11 @@ function setupFavoriteButton(movie) {
   if (!btn) return;
 
   let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
-  const isFav = favoris.find(f => f.id === movie.id);
+  const isFav = favoris.some(f => f.id === movie.id);
 
   if (isFav) btn.textContent = "Retirer des favoris";
 
-  btn.addEventListener("click", () => {
+  btn.onclick = () => {
     let favoris = JSON.parse(localStorage.getItem("favoris")) || [];
     const index = favoris.findIndex(f => f.id === movie.id);
 
@@ -230,7 +218,7 @@ function setupFavoriteButton(movie) {
     }
 
     localStorage.setItem("favoris", JSON.stringify(favoris));
-  });
+  };
 }
 
 // ==================== PAGE FAVORIS ====================
@@ -239,18 +227,68 @@ function loadFavoris() {
   if (!container) return;
 
   const favoris = JSON.parse(localStorage.getItem("favoris")) || [];
-
-  if (favoris.length === 0) {
+  if (!favoris.length) {
     container.innerHTML = "<p>Aucun favori.</p>";
     return;
   }
 
   displayMovies(favoris, "favorisList");
 }
+// ==================== LECTEUR VIDEO ====================
+function initPlayer() {
+  const video = document.getElementById("video");
+  if (!video) return;
 
+  const playPause = document.getElementById("playPause");
+  const progress = document.getElementById("progress");
+  const progressBar = document.getElementById("progressBar");
+  const volume = document.getElementById("volume");
+  const muteBtn = document.getElementById("mute");
+  const timeDisplay = document.getElementById("time");
+  const fullscreenBtn = document.getElementById("fullscreen");
+  const controls = document.getElementById("controls");
+  const player = document.getElementById("player");
+
+  playPause.onclick = () => {
+    if (video.paused) {
+      video.play();
+      playPause.textContent = "⏸";
+    } else {
+      video.pause();
+      playPause.textContent = "▶";
+    }
+  };
+  video.ontimeupdate = () => {
+    const percent = (video.currentTime / video.duration) * 100;
+    progressBar.style.width = percent + "%";
+    const format = t => `${Math.floor(t / 60)}:${Math.floor(t % 60).toString().padStart(2, "0")}`;
+    timeDisplay.textContent = `${format(video.currentTime)} / ${format(video.duration || 0)}`;
+  };
+  progress.onclick = (e) => {
+    const rect = progress.getBoundingClientRect();
+    video.currentTime = ((e.clientX - rect.left) / rect.width) * video.duration;
+  };
+  volume.oninput = () => video.volume = volume.value;
+  muteBtn.onclick = () => {
+    video.muted = !video.muted;
+    muteBtn.textContent = video.muted ? "🔇" : "🔊";
+  };
+  fullscreenBtn.onclick = () => {
+    document.fullscreenElement ? document.exitFullscreen() : player.requestFullscreen();
+  };
+  let timeout;
+  const showControls = () => {
+    controls.classList.remove("hidden");
+    clearTimeout(timeout);
+    timeout = setTimeout(() => controls.classList.add("hidden"), 3000);
+  };
+  player.onmousemove = showControls;
+  player.onclick = showControls;
+}
 // ==================== INIT ====================
 document.addEventListener("DOMContentLoaded", () => {
   loadHome();
   loadFilmDetail();
   loadFavoris();
+  initPlayer();
 });

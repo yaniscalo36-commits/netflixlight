@@ -11,6 +11,7 @@
 
 <header>
     <h1>NETFLIXLIGHT</h1>
+    <!-- NAVIGATION -->
     <nav>
         <a href="index.html">Accueil</a>
         <a href="favoris.html">Favoris</a>
@@ -18,7 +19,8 @@
     </nav>
 </header>
 
-<!-- HERO DETAIL -->
+
+<!-- ================= HERO DETAIL ================= -->
 <section class="hero" id="filmHero">
     <div class="hero-content">
         <h2 id="filmTitle">Chargement...</h2>
@@ -28,8 +30,38 @@
         <button id="favBtn" class="btn-films">Ajouter aux favoris</button>
     </div>
 </section>
+<!-- ================= LECTEUR VIDEO ================= -->
+<section>
 
-<!-- CAST -->
+    <div class="player" id="player">
+
+        <video id="video">
+            <source src="https://samplelib.com/lib/preview/mp4/sample-5s.mp4" type="video/mp4">
+        </video>
+
+        <div class="controls" id="controls">
+
+            <!-- BARRE DE PROGRESSION -->
+            <div class="progress" id="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <!-- BOUTONS -->
+            <div class="buttons">
+                <button id="playPause">▶</button>
+                <span id="time">0:00 / 0:00</span>
+
+                <input type="range" id="volume" min="0" max="1" step="0.1">
+
+                <button id="mute">🔊</button>
+                <button id="fullscreen">⛶</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================= CAST ================= -->
 <section>
     <h2>Acteurs</h2>
     <div class="carousel" id="cast">
@@ -37,14 +69,15 @@
     </div>
 </section>
 
-<!-- SIMILAIRES -->
+
+<!-- ================= SIMILAIRES ================= -->
 <section>
     <h2>Films similaires</h2>
     <div class="carousel" id="similar">
         <p>Chargement...</p>
     </div>
 </section>
-
+<!-- ================= SCRIPT ================= -->
 <script src="/js/script.js"></script>
 
 </body>

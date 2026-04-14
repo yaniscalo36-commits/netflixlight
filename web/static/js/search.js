@@ -1,19 +1,19 @@
 const searchInput = document.getElementById("searchInput");
 
-let debounceTimer;
+let timer;
 
-// debounce 300ms
-function debounceSearch(callback, delay) {
-  return (...args) => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => callback(...args), delay);
+// ⏳ évite trop de requêtes pendant la saisie
+function debounce(callback, delay) {
+  return (value) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => callback(value), delay);
   };
 }
 
-// fonction principale
-async function handleSearch(query) {
+// 🔍 recherche principale
+async function searchMovies(query) {
   const section = document.getElementById("searchSection");
-
+  // cache si vide ou trop court
   if (!query || query.length < 2) {
     section.style.display = "none";
     return;
@@ -23,9 +23,9 @@ async function handleSearch(query) {
 
   try {
     const res = await fetch(`${API_BASE}/movies/search?q=${encodeURIComponent(query)}`);
-    const data = await res.json();
+    const movies = await res.json();
 
-    displayMovies(data, "searchResults");
+    displayMovies(movies, "searchResults");
 
   } catch (err) {
     console.error("Erreur recherche :", err);
@@ -33,11 +33,11 @@ async function handleSearch(query) {
 }
 
 // version avec debounce
-const debouncedSearch = debounceSearch(handleSearch, 300);
+const search = debounce(searchMovies, 300);
 
-// écoute input
+// écoute utilisateur
 if (searchInput) {
   searchInput.addEventListener("input", (e) => {
-    debouncedSearch(e.target.value);
+    search(e.target.value);
   });
 }
