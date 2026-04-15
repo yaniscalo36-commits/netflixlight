@@ -337,3 +337,13 @@ section {
   background: black;
   color: white;
 }
+
+.auth-switch {
+  text-align: center;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.auth-switch a {
+  color: #e50914;
+}

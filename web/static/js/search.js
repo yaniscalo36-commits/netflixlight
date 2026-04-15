@@ -2,7 +2,7 @@ const searchInput = document.getElementById("searchInput");
 
 let timer;
 
-// ⏳ évite trop de requêtes pendant la saisie
+//  évite trop de requêtes pendant la saisie
 function debounce(callback, delay) {
   return (value) => {
     clearTimeout(timer);
@@ -10,7 +10,7 @@ function debounce(callback, delay) {
   };
 }
 
-// 🔍 recherche principale
+//  recherche principale
 async function searchMovies(query) {
   const section = document.getElementById("searchSection");
   // cache si vide ou trop court
