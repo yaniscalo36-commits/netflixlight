@@ -19,6 +19,14 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "web", "templates", "index.html"));
 });
 
+app.get("/login.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "web", "templates", "login.html"));
+});
+
+app.get("/register.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "web", "templates", "register.html"));
+});
+
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur http://localhost:${PORT}`);
 });
