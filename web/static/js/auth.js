@@ -59,7 +59,7 @@ if (registerForm) {
       }
 
       alert("Inscription réussie, vous pouvez maintenant vous connecter");
-      window.location.href = "/login.html";
+      window.location.href = "/authentification.html";
     } catch (error) {
       console.error("Erreur register :", error);
       alert("Erreur serveur");
