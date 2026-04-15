@@ -19,7 +19,19 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "web", "templates", "index.html"));
 });
 
-app.get("/login.html", (req, res) => {
+app.get("/favoris.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "web", "templates", "favoris.html"));
+})
+
+app.get("/film.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "web", "templates", "film.html"));
+})
+
+app.get("/lecteur.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "web", "templates", "lecteur.html"));
+})
+
+app.get("/authentification.html", (req, res) => {
   res.sendFile(path.join(__dirname, "web", "templates", "login.html"));
 });
 
