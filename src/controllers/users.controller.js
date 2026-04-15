@@ -1,111 +1,113 @@
 const db = require("../data/database");
+const crypto = require("crypto");
 
-const getAllUsers = (req, res) => {
-  const sql = "SELECT * FROM users";
+function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.scryptSync(password, salt, 64).toString("hex");
+  return `${salt}:${hash}`;
+}
 
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+function verifyPassword(password, storedHash) {
+  const [salt, originalHash] = storedHash.split(":");
 
-    res.json(rows);
-  });
-};
+  const hashBuffer = crypto.scryptSync(password, salt, 64);
+  const originalHashBuffer = Buffer.from(originalHash, "hex");
 
-const getUserById = (req, res) => {
-  const id = req.params.id;
-  const sql = "SELECT * FROM users WHERE id = ?";
+  if (hashBuffer.length !== originalHashBuffer.length) {
+    return false;
+  }
 
-  db.get(sql, [id], (err, row) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+  return crypto.timingSafeEqual(hashBuffer, originalHashBuffer);
+}
 
-    if (!row) {
-      return res.status(404).json({ message: "Utilisateur non trouvé" });
-    }
+const registerUser = (req, res) => {
+  const { username, email, password } = req.body;
 
-    res.json(row);
-  });
-};
-
-const createUser = (req, res) => {
-  const { name, email } = req.body;
-
-  if (!name || !email) {
+  if (!username || !email || !password) {
     return res.status(400).json({
-      message: "Les champs name et email sont obligatoires"
+      message: "Les champs username, email et password sont obligatoires"
     });
   }
 
-  const sql = "INSERT INTO users (name, email) VALUES (?, ?)";
+  const checkSql = "SELECT id FROM users WHERE email = ?";
 
-  db.run(sql, [name, email], function (err) {
+  db.get(checkSql, [email], (err, existingUser) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
 
-    res.status(201).json({
-      id: this.lastID,
-      name,
-      email
+    if (existingUser) {
+      return res.status(409).json({
+        message: "Un compte avec cet email existe déjà"
+      });
+    }
+
+    const passwordHash = hashPassword(password);
+
+    const insertSql = `
+      INSERT INTO users (username, email, password_hash)
+      VALUES (?, ?, ?)
+    `;
+
+    db.run(insertSql, [username, email, passwordHash], function (err) {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+
+      res.status(201).json({
+        message: "Inscription réussie",
+        user: {
+          id: this.lastID,
+          username,
+          email
+        }
+      });
     });
   });
 };
 
-const updateUser = (req, res) => {
-  const id = req.params.id;
-  const { name, email } = req.body;
+const loginUser = (req, res) => {
+  const { email, password } = req.body;
 
-  if (!name || !email) {
+  if (!email || !password) {
     return res.status(400).json({
-      message: "Les champs name et email sont obligatoires"
+      message: "Les champs email et password sont obligatoires"
     });
   }
 
-  const sql = "UPDATE users SET name = ?, email = ? WHERE id = ?";
+  const sql = "SELECT * FROM users WHERE email = ?";
 
-  db.run(sql, [name, email, id], function (err) {
+  db.get(sql, [email], (err, user) => {
     if (err) {
       return res.status(500).json({ error: err.message });
     }
 
-    if (this.changes === 0) {
-      return res.status(404).json({ message: "Utilisateur non trouvé" });
+    if (!user) {
+      return res.status(401).json({
+        message: "Email ou mot de passe incorrect"
+      });
+    }
+
+    const isValidPassword = verifyPassword(password, user.password_hash);
+
+    if (!isValidPassword) {
+      return res.status(401).json({
+        message: "Email ou mot de passe incorrect"
+      });
     }
 
     res.json({
-      message: "Utilisateur mis à jour",
+      message: "Connexion réussie",
       user: {
-        id: Number(id),
-        name,
-        email
+        id: user.id,
+        username: user.username,
+        email: user.email
       }
     });
   });
 };
 
-const deleteUser = (req, res) => {
-  const id = req.params.id;
-  const sql = "DELETE FROM users WHERE id = ?";
-
-  db.run(sql, [id], function (err) {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
-
-    if (this.changes === 0) {
-      return res.status(404).json({ message: "Utilisateur non trouvé" });
-    }
-
-    res.json({ message: "Utilisateur supprimé" });
-  });
-};
-
 module.exports = {
-  getAllUsers,
-  getUserById,
-  createUser,
-  updateUser,
-  deleteUser
+  registerUser,
+  loginUser
 };
