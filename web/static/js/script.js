@@ -3,10 +3,10 @@ const API_BASE = "http://localhost:3000/api";
 // ==================== FETCH ====================
 async function fetchData(endpoint) {
   try {
-    const res = await fetch(`${API_BASE}${endpoint}`);
+    const res = await fetch(`${API_BASE}${endpoint}`); //requete
     if (!res.ok) throw new Error();
     return await res.json();
-  } catch (err) {
+  } catch (err) { //données json
     console.error("Erreur API :", err);
     return null;
   }
@@ -184,7 +184,7 @@ async function loadFilmDetail() {
   document.getElementById("filmTitle").textContent = movie.title || movie.name;
   document.getElementById("filmOverview").textContent = movie.overview || "Pas de description";
 
-  let info = `⭐ ${movie.vote_average}`;
+  let info = `Note : ${movie.vote_average}`;
 
   if (movie.release_date) info += ` | ${movie.release_date}`;
   if (movie.runtime) info += ` | ${movie.runtime} min`;
@@ -291,4 +291,32 @@ document.addEventListener("DOMContentLoaded", () => {
   loadFilmDetail();
   loadFavoris();
   initPlayer();
+  initTheme();
 });
+// ==================== THEME ====================
+
+function initTheme() {
+  const toggleBtn = document.getElementById("themeToggle");
+
+  // récupérer le thème sauvegardé
+  const savedTheme = localStorage.getItem("theme");
+
+  if (savedTheme === "light") {
+    document.body.classList.add("light-mode");
+    if (toggleBtn) toggleBtn.textContent = "Mode sombre";
+  }
+
+  if (!toggleBtn) return;
+
+  toggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("light-mode");
+
+    const isLight = document.body.classList.contains("light-mode");
+
+    // sauvegarde
+    localStorage.setItem("theme", isLight ? "light" : "dark");
+
+    // changer texte bouton
+    toggleBtn.textContent = isLight ? "Mode sombre" : "Mode clair";
+  });
+}

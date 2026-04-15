@@ -300,3 +300,40 @@ section {
 .auth-box button:hover {
   background: #b20710;
 }
+/* ================= THEME CLAIR ================= */
+
+.light-mode {
+  background: #f5f5f5;
+  color: black;
+}
+
+.light-mode header {
+  background: #ffffff;
+}
+
+.light-mode nav a {
+  color: black;
+}
+
+.light-mode .hero-content {
+  background: rgba(255,255,255,0.8);
+}
+
+.light-mode .card {
+  background: #ddd;
+}
+
+.light-mode .info {
+  background: linear-gradient(to top, rgba(255,255,255,0.9), rgba(255,255,255,0.4), transparent);
+  color: black;
+}
+
+.light-mode .btn-fav {
+  border: 1px solid black;
+  color: black;
+}
+
+.light-mode .btn-fav:hover {
+  background: black;
+  color: white;
+}
