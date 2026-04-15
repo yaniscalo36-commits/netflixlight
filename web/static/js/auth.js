@@ -9,12 +9,12 @@ if (loginForm) {
     const password = document.getElementById("password").value.trim();
 
     try {
-      const response = await fetch("/api/users/login", {
+      const response = await fetch("/api/users/authentification", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }) // ✅ FIX LOGIN
       });
 
       const data = await response.json();
@@ -48,7 +48,7 @@ if (registerForm) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ username, email, password })
+        body: JSON.stringify({ name: username, email, password }) // ✅ FIX REGISTER
       });
 
       const data = await response.json();
